@@ -18,6 +18,7 @@ jobs:
       - run: pnpm exec biome ci
       - run: pnpm -r run typecheck
       - run: pnpm -r run build
+      - run: pnpm -r run test
 
   pipeline:
     runs-on: ubuntu-latest

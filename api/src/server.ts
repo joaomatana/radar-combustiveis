@@ -1,13 +1,28 @@
 import { buildApp } from "./app";
+import { config } from "./lib/config";
+import { closeDb } from "./lib/db";
 
 const app = buildApp({ logger: true });
-const port = Number(process.env.PORT ?? 3333);
-const host = process.env.HOST ?? "0.0.0.0";
 
-app
-  .listen({ port, host })
-  .then((address) => app.log.info(`api ouvindo em ${address}`))
-  .catch((err: unknown) => {
-    app.log.error({ err }, "falha ao iniciar a api");
-    process.exit(1);
-  });
+async function shutdown(signal: string): Promise<void> {
+  app.log.info(`recebido ${signal}, encerrando…`);
+  try {
+    await app.close(); // dispara o hook onClose → closeDb()
+  } catch (err) {
+    app.log.error({ err }, "erro ao encerrar");
+  } finally {
+    process.exit(0);
+  }
+}
+
+process.on("SIGTERM", () => void shutdown("SIGTERM"));
+process.on("SIGINT", () => void shutdown("SIGINT"));
+
+try {
+  const address = await app.listen({ port: config.port, host: config.host });
+  app.log.info(`api ouvindo em ${address}`);
+} catch (err) {
+  app.log.error({ err }, "falha ao iniciar a api");
+  await closeDb();
+  process.exit(1);
+}

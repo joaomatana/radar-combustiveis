@@ -1,23 +1,17 @@
-/** Contratos compartilhados do radar-combustiveis (api ↔ web). */
+import { z } from "zod";
+
+export * from "./enums";
+export * from "./marts";
+export * from "./queries";
 
 /** Resposta de GET /health. */
-export interface HealthResponse {
-  readonly status: "ok";
-}
+export const healthResponseSchema = z.object({ status: z.literal("ok") });
+export type HealthResponse = z.infer<typeof healthResponseSchema>;
 
-// STAGE 1: placeholders dos marts; preenchidos quando a camada analítica existir.
-
-/** Preço médio por UF e mês (mart_preco_medio_uf_mes). */
-export interface MartPrecoMedioUfMes {
-  readonly _placeholder?: never;
-}
-
-/** Variação de preço entre períodos (mart_variacao_preco). */
-export interface MartVariacaoPreco {
-  readonly _placeholder?: never;
-}
-
-/** Dispersão de preço entre revendas (mart_dispersao_revenda). */
-export interface MartDispersaoRevenda {
-  readonly _placeholder?: never;
-}
+/** Envelope de erro padrão da API (alinhado ao errorHandler do Fastify). */
+export const apiErrorSchema = z.object({
+  error: z.string(),
+  code: z.string(),
+  issues: z.unknown().optional(),
+});
+export type ApiError = z.infer<typeof apiErrorSchema>;
