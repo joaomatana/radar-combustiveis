@@ -15,7 +15,7 @@ ANP (CSV) ──cron semanal (GitHub Actions)──► Neon (Postgres)
 - **GitHub Actions** — cron semanal que baixa a ANP e roda o dbt direto no Neon.
 
 > O ELT **só roda no GitHub Actions** (não nos servidores). A API e a SPA apenas **leem** os marts.
-> Todos os deploys e o cron seguem o branch **default do repo (`master`)** — crons do GitHub só
+> Todos os deploys e o cron seguem o branch **default do repo (`main`)** — crons do GitHub só
 > disparam no branch default.
 
 ## Pré-requisitos

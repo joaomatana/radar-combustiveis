@@ -1,6 +1,6 @@
 name: ELT semanal (ANP -> Neon)
 
-# Cron só dispara no branch DEFAULT do repo (master). workflow_dispatch roda sob demanda
+# Cron só dispara no branch DEFAULT do repo (main). workflow_dispatch roda sob demanda
 # (use full=true p/ o backfill da série inteira na 1ª carga).
 on:
   schedule:

@@ -7,7 +7,7 @@ services:
     name: radar-api
     runtime: node
     plan: free
-    branch: master # branch default do repo (não existe main)
+    branch: main # branch default do repo
     buildCommand: pnpm install --frozen-lockfile && pnpm --filter api build
     startCommand: pnpm --filter api start
     healthCheckPath: /health
