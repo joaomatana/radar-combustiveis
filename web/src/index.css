@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+/*
+ * Tokens do radar-combustiveis (Tailwind v4 — config em CSS). Cores semânticas em
+ * @theme p/ gerar utilitários (bg-bg, text-fg, text-flame-500, text-up...). A classe
+ * .dark no <html> (useTheme) re-tematiza os neutros via as mesmas vars.
+ */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
+
+  --color-flame-500: #f97316;
+  --color-petro-600: #0e7c66;
+  --color-up: #dc2626; /* preço em alta (ruim na visão do consumidor) */
+  --color-down: #16a34a; /* preço em baixa (bom) */
+
+  --color-bg: #fafaf7;
+  --color-surface: #ffffff;
+  --color-border: #e7e5e0;
+  --color-fg: #1c1917;
+  --color-muted: #78716c;
+
+  --radius-card: 0.75rem;
+}
+
+.dark {
+  --color-bg: #0b0d0e;
+  --color-surface: #15181a;
+  --color-border: #262b2e;
+  --color-fg: #f5f5f4;
+  --color-muted: #9ca3a3;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum" 1;
+  -webkit-font-smoothing: antialiased;
+}

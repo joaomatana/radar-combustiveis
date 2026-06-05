@@ -13,7 +13,8 @@
       "!.claude",
       "!**/*.d.ts",
       "!**/*.yaml",
-      "!**/*.yml"
+      "!**/*.yml",
+      "!**/*.css"
     ]
   },
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
