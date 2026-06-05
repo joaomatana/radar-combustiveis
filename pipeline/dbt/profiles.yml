@@ -10,7 +10,7 @@ radar_combustiveis:
     dev:
       type: postgres
       host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
-      port: "{{ env_var('POSTGRES_PORT', '5432') | int }}"
+      port: "{{ env_var('POSTGRES_PORT', '5433') | int }}"
       user: "{{ env_var('POSTGRES_USER', 'radar') }}"
       password: "{{ env_var('POSTGRES_PASSWORD', 'radar') }}"
       dbname: "{{ env_var('POSTGRES_DB', 'radar') }}"

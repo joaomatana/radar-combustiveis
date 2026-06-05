@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: stg_anp__precos
+    description: >
+      Preços de combustíveis da ANP limpos (trim, remoção de quebras de linha,
+      vírgula→ponto, datas BR para date). Grão: uma coleta por posto/produto.
+    columns:
+      - name: regiao
+        description: Sigla da região (normalizada).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['N', 'NE', 'CO', 'SE', 'S']
+      - name: uf
+        description: Sigla da unidade federativa.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RO','RR','RS','SC','SE','SP','TO']
+      - name: produto
+        description: Produto pesquisado.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['GASOLINA','GASOLINA ADITIVADA','ETANOL','DIESEL','DIESEL S10','GNV','GLP']
+      - name: data_coleta
+        description: Data da coleta do preço.
+        data_tests:
+          - not_null
+      - name: valor_venda
+        description: Valor de venda em R$ (vírgula convertida para ponto).
+        data_tests:
+          - not_null
+          - positivo
+      - name: valor_compra
+        description: Valor de compra em R$ (em geral nulo na série mensal recente).

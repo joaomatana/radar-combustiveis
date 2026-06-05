@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: anp
+    description: Série Histórica de Preços de Combustíveis da ANP, carregada dos CSVs crus no Postgres (schema raw).
+    schema: raw
+    tables:
+      - name: precos
+        description: Preços de revenda por posto, produto e data de coleta (grão = uma coleta).
+        loaded_at_field: _loaded_at
+        freshness:
+          warn_after: {count: 8, period: day}
+          error_after: {count: 21, period: day}

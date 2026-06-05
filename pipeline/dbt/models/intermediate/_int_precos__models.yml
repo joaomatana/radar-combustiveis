@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: int_precos_municipio_semana
+    description: Agregação semanal de preços por região, UF, município, produto, ano, mês e semana.
+    columns:
+      - name: id
+        description: Chave do grão (UF, município, produto, ano, mês, semana).
+        data_tests:
+          - not_null
+          - unique
+      - name: preco_medio_venda
+        description: Preço médio de venda no grão (R$).
+        data_tests:
+          - positivo
+
+  - name: int_precos_uf_mes
+    description: >
+      Agregação mensal por UF/produto/mês — média ponderada, mín/máx, dispersão entre
+      municípios e margem. Base compartilhada pelos três marts.
+    columns:
+      - name: id
+        description: Chave do grão (UF, produto, ano, mês).
+        data_tests:
+          - not_null
+          - unique
+      - name: preco_medio_venda
+        description: Preço médio ponderado por nº de coletas (R$).
+        data_tests:
+          - not_null
+          - positivo

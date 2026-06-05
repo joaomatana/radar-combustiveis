@@ -17,6 +17,9 @@ pipeline/dbt/logs/
 pipeline/dbt/.user.yml
 logs/
 
+# ANP CSVs baixados (fixtures/ é commitado)
+pipeline/extract/raw/
+
 # Env / secrets
 .env
 .env.*

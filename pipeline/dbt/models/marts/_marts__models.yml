@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: mart_preco_medio_uf_mes
+    description: Preço médio (ponderado por nº de coletas) de venda por UF, produto, ano e mês.
+    columns:
+      - name: id
+        description: Chave do grão (UF, produto, ano, mês).
+        data_tests:
+          - not_null
+          - unique
+      - name: uf
+        data_tests:
+          - not_null
+      - name: produto
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['GASOLINA','GASOLINA ADITIVADA','ETANOL','DIESEL','DIESEL S10','GNV','GLP']
+      - name: preco_medio_venda
+        description: Preço médio ponderado de venda (R$).
+        data_tests:
+          - not_null
+          - positivo
+
+  - name: mart_variacao_preco
+    description: Variação percentual mês a mês do preço médio de venda por UF e produto.
+    columns:
+      - name: id
+        description: Chave do grão (UF, produto, ano, mês).
+        data_tests:
+          - not_null
+          - unique
+      - name: uf
+        data_tests:
+          - not_null
+      - name: produto
+        data_tests:
+          - not_null
+      - name: preco_medio_venda
+        description: Preço médio de venda no mês (R$).
+        data_tests:
+          - not_null
+          - positivo
+      - name: preco_mes_anterior
+        description: Preço médio de venda do mês anterior (nulo no 1º mês da série).
+      - name: variacao_pct
+        description: Variação % vs. mês anterior (nulo no 1º mês da série).
+
+  - name: mart_dispersao_revenda
+    description: >
+      Dispersão dos preços de venda entre municípios por UF/produto/mês (proxy de
+      concorrência). margem_media (venda−compra) fica nula enquanto a ANP não publica
+      o valor de compra na série mensal.
+    columns:
+      - name: id
+        description: Chave do grão (UF, produto, ano, mês).
+        data_tests:
+          - not_null
+          - unique
+      - name: uf
+        data_tests:
+          - not_null
+      - name: produto
+        data_tests:
+          - not_null
+      - name: amplitude_venda
+        description: Diferença entre o maior e o menor preço de venda no grão (R$).
+        data_tests:
+          - not_null
+      - name: coef_variacao_pct
+        description: Desvio-padrão / média dos preços médios municipais, em %.
+      - name: margem_media
+        description: Margem média estimada (venda − compra); nula sem valor de compra na fonte.
