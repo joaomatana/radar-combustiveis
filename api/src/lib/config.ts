@@ -24,9 +24,21 @@ const databaseUrl =
   env.DATABASE_URL ??
   `postgresql://${env.POSTGRES_USER}:${env.POSTGRES_PASSWORD}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`;
 
+/**
+ * CORS_ORIGIN aceita uma origem única ou lista separada por vírgula (prod = domínio
+ * do Vercel; permite somar um domínio custom depois). @fastify/cors aceita string|string[].
+ */
+export function parseCorsOrigin(raw: string): string | string[] {
+  const parts = raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return parts.length > 1 ? parts : (parts[0] ?? raw);
+}
+
 export const config = {
   databaseUrl,
   port: env.PORT,
   host: env.HOST,
-  corsOrigin: env.CORS_ORIGIN,
+  corsOrigin: parseCorsOrigin(env.CORS_ORIGIN),
 } as const;

@@ -1,0 +1,20 @@
+# Render Blueprint — API Fastify (plano free).
+# Root Directory = raiz do repo (NÃO api/): @radar/contracts é workspace:*, então o
+# pnpm precisa do workspace root + lockfile. O tsup (noExternal) embute o contrato no
+# dist, então só fastify/pg/zod precisam resolver em runtime (vêm do pnpm install).
+services:
+  - type: web
+    name: radar-api
+    runtime: node
+    plan: free
+    branch: master # branch default do repo (não existe main)
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter api build
+    startCommand: pnpm --filter api start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL # Neon POOLED (-pooler); resolveSsl liga o TLS pelo host neon.tech
+        sync: false
+      - key: CORS_ORIGIN # origem exata do Vercel (sem barra final) — senão o browser bloqueia a SPA
+        sync: false
+      # NÃO declarar PORT (o Render injeta $PORT). A versão do Node vem do .node-version (22).

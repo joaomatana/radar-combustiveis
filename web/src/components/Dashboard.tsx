@@ -39,6 +39,7 @@ export function Dashboard() {
       error={filtros.error}
       onRetry={filtros.reload}
       minHeight="60vh"
+      wakeHint
     >
       {filtros.data ? <DashboardReady filtros={filtros.data} /> : null}
     </StateWrapper>

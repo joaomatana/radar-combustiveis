@@ -57,7 +57,7 @@ export class PgMartsRepository implements MartsRepository {
          preco_max_venda::float8 AS preco_max_venda,
          qtd_coletas::int AS qtd_coletas,
          qtd_municipios::int AS qtd_municipios
-       FROM mart_preco_medio_uf_mes ${clause} ${ORDER}`,
+       FROM public.mart_preco_medio_uf_mes ${clause} ${ORDER}`,
       params,
     );
   }
@@ -69,7 +69,7 @@ export class PgMartsRepository implements MartsRepository {
          preco_medio_venda::float8 AS preco_medio_venda,
          preco_mes_anterior::float8 AS preco_mes_anterior,
          variacao_pct::float8 AS variacao_pct
-       FROM mart_variacao_preco ${clause} ${ORDER}`,
+       FROM public.mart_variacao_preco ${clause} ${ORDER}`,
       params,
     );
   }
@@ -86,19 +86,19 @@ export class PgMartsRepository implements MartsRepository {
          desvio_padrao_municipal::float8 AS desvio_padrao_municipal,
          coef_variacao_pct::float8 AS coef_variacao_pct,
          margem_media::float8 AS margem_media
-       FROM mart_dispersao_revenda ${clause} ${ORDER}`,
+       FROM public.mart_dispersao_revenda ${clause} ${ORDER}`,
       params,
     );
   }
 
   async filtros(): Promise<Filtros> {
     const [ufRows, prodRows, perRows] = await Promise.all([
-      query<{ uf: string }>("SELECT DISTINCT uf FROM mart_preco_medio_uf_mes ORDER BY uf"),
+      query<{ uf: string }>("SELECT DISTINCT uf FROM public.mart_preco_medio_uf_mes ORDER BY uf"),
       query<{ produto: string }>(
-        "SELECT DISTINCT produto FROM mart_preco_medio_uf_mes ORDER BY produto",
+        "SELECT DISTINCT produto FROM public.mart_preco_medio_uf_mes ORDER BY produto",
       ),
       query<{ ano: number; mes: number }>(
-        "SELECT DISTINCT ano, mes FROM mart_preco_medio_uf_mes ORDER BY ano, mes",
+        "SELECT DISTINCT ano, mes FROM public.mart_preco_medio_uf_mes ORDER BY ano, mes",
       ),
     ]);
     // Valida + tipa as listas (dbt já garante via accepted_values; aqui estreita p/ Uf/Produto).

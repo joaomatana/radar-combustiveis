@@ -153,6 +153,9 @@ def conexao() -> "psycopg2.extensions.connection":
             user=os.environ.get("POSTGRES_USER", "radar"),
             password=os.environ.get("POSTGRES_PASSWORD", "radar"),
             dbname=os.environ.get("POSTGRES_DB", "radar"),
+            # Neon exige SSL; local roda sem. O cron seta POSTGRES_SSLMODE=require p/ ser
+            # explícito (paridade com sslmode: require do dbt). Default prefer = local ok.
+            sslmode=os.environ.get("POSTGRES_SSLMODE", "prefer"),
         )
     except UnicodeDecodeError as e:
         # Windows pt-BR: libpq devolve a mensagem de erro em cp1252 e o psycopg2

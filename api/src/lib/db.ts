@@ -1,5 +1,6 @@
 import pkg from "pg";
 import { config } from "./config";
+import { resolveSsl } from "./ssl";
 
 // pg é CJS: o default export é o module.exports (objeto com .Pool/.Client).
 // Sob ESM, a forma segura é importar o default e desestruturar.
@@ -14,6 +15,9 @@ export function getPool(): PoolType {
   if (!pool) {
     pool = new Pool({
       connectionString: config.databaseUrl,
+      // Neon exige SSL (TLS verificado); Postgres local roda sem. resolveSsl decide
+      // explícito pela URL — não depende do parsing de sslmode do pg (muda no v9).
+      ssl: resolveSsl(config.databaseUrl),
       max: 10,
       idleTimeoutMillis: 30_000,
       connectionTimeoutMillis: 5_000,

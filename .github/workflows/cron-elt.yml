@@ -1,0 +1,50 @@
+name: ELT semanal (ANP -> Neon)
+
+# Cron só dispara no branch DEFAULT do repo (master). workflow_dispatch roda sob demanda
+# (use full=true p/ o backfill da série inteira na 1ª carga).
+on:
+  schedule:
+    - cron: "0 9 * * 1" # seg 09:00 UTC (06:00 BRT)
+  workflow_dispatch:
+    inputs:
+      full:
+        description: "Rebaixar a serie inteira (backfill unico)"
+        type: boolean
+        default: false
+
+jobs:
+  elt:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+      - run: pip install -r pipeline/requirements.txt
+
+      - name: Extract ANP -> Neon (raw.precos)
+        env:
+          POSTGRES_HOST: ${{ secrets.NEON_HOST }} # endpoint DIRECT (sem -pooler)
+          POSTGRES_PORT: "5432"
+          POSTGRES_USER: ${{ secrets.NEON_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.NEON_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.NEON_DATABASE }}
+          POSTGRES_SSLMODE: require
+          RADAR_ALLOW_PROD: "1" # libera o guard de Neon do loader
+        run: python pipeline/extract/extract_anp.py ${{ inputs.full && '--full' || '' }}
+
+      - name: dbt build --target prod (staging -> marts + testes)
+        working-directory: pipeline/dbt
+        env:
+          PGHOST: ${{ secrets.NEON_HOST }}
+          PGPORT: "5432"
+          PGUSER: ${{ secrets.NEON_USER }}
+          PGPASSWORD: ${{ secrets.NEON_PASSWORD }}
+          PGDATABASE: ${{ secrets.NEON_DATABASE }}
+          PGSCHEMA: public # LOAD-BEARING: marts em public (a API lê FROM public.mart_*)
+        run: dbt build --target prod
