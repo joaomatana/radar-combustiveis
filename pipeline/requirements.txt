@@ -1,0 +1,6 @@
+# Runtime do pipeline. dbt-postgres puxa dbt-core como dependência.
+# Fixamos dbt-core na linha 1.10 ESTÁVEL: o dbt-postgres 1.10.0 (último estável)
+# por padrão resolveria dbt-core para 2.0a1 (engine "Fusion"), que ainda NÃO
+# suporta o adapter postgres. Deps de extração (requests, psycopg) entram na ETAPA 2.
+dbt-core~=1.10.0
+dbt-postgres~=1.10.0

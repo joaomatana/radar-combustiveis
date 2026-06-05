@@ -1,0 +1,33 @@
+# Node / pnpm
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+coverage/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# dbt
+pipeline/dbt/target/
+pipeline/dbt/dbt_packages/
+pipeline/dbt/logs/
+pipeline/dbt/.user.yml
+logs/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# DuckDB (legado do projeto irmão)
+*.duckdb
+*.duckdb.wal
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

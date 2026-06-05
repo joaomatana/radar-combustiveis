@@ -1,0 +1,29 @@
+# profiles.yml versionado. O dbt Core (1.5+) procura este arquivo no diretório de
+# trabalho atual — rode os comandos a partir de pipeline/dbt/.
+#
+# O dbt renderiza TODOS os targets antes de escolher o ativo, então TODO env_var
+# precisa de default; senão `dbt parse` quebra mesmo sem usar o target prod.
+# dev = defaults locais reais; prod (Neon) = defaults vazios (preenchidos via env/CI).
+radar_combustiveis:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
+      port: "{{ env_var('POSTGRES_PORT', '5432') | int }}"
+      user: "{{ env_var('POSTGRES_USER', 'radar') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD', 'radar') }}"
+      dbname: "{{ env_var('POSTGRES_DB', 'radar') }}"
+      schema: public
+      threads: 4
+      sslmode: prefer
+    prod:
+      type: postgres
+      host: "{{ env_var('PGHOST', '') }}"
+      port: "{{ env_var('PGPORT', '5432') | int }}"
+      user: "{{ env_var('PGUSER', '') }}"
+      password: "{{ env_var('PGPASSWORD', '') }}"
+      dbname: "{{ env_var('PGDATABASE', '') }}"
+      schema: "{{ env_var('PGSCHEMA', 'public') }}"
+      threads: 4
+      sslmode: require
