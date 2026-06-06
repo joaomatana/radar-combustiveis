@@ -4,11 +4,7 @@
 
 Dashboard **ao vivo** de preços de combustíveis da ANP (Brasil) — da extração ao gráfico. Um ELT semanal carrega a série histórica num Postgres, o **dbt** modela os marts, uma **API Fastify** tipada serve, e um **SPA React** desenha. Monorepo: `pipeline` (Python/dbt) · `api` (Fastify/TS) · `web` (React/TS) · `packages/contracts` (tipos compartilhados).
 
-**🔗 Demo:** `‹URL do Vercel›` &nbsp;·&nbsp; **API:** `‹URL do Render›/health`
-<!-- substitua os placeholders acima pelas URLs reais (Vercel + Render) -->
-
-<!-- screenshot: adicione docs/screenshot.png e descomente a linha abaixo -->
-<!-- ![Dashboard](docs/screenshot.png) -->
+**🔗 Demo:** `https://radar-combustiveis.vercel.app/` &nbsp;·&nbsp; **API:** `https://radar-combustiveis.onrender.com/health`
 
 ## Arquitetura
 
