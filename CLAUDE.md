@@ -11,3 +11,4 @@ Monorepo: pipeline (Python/dbt/Postgres) + api (Fastify/TS) + web (React/TS). Da
 - Pipeline: `cd pipeline/dbt && dbt build` (target dev/local)
 - API: `pnpm --filter api dev`  | Web: `pnpm --filter web dev`  | Testes: `pnpm -r test`
 - Refresh (local): `python pipeline/extract/extract_anp.py` → `cd pipeline/dbt && dbt build` → `python pipeline/publish/publish_marts.py` (publica os marts no Neon; precisa `NEON_DATABASE_URL`)
+- Perfil dos marts: `python pipeline/profile/profile_marts.py` → `pipeline/profile/profile.md`

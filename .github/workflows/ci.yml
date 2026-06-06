@@ -58,3 +58,6 @@ jobs:
       - name: dbt build (models + testes)
         working-directory: pipeline/dbt
         run: dbt build
+      - name: Perfil dos marts (prova que o profiler roda verde)
+        working-directory: pipeline
+        run: python profile/profile_marts.py
