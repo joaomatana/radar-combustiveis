@@ -1,14 +1,16 @@
-name: ELT semanal (ANP -> Neon)
+# DESATIVADO (referência) - o ELT NÃO roda mais no GitHub Actions:
+#   - o gov.br bloqueia o IP de datacenter do runner (a série não baixa); e
+#   - o Neon free não comporta o raw inteiro - lá ficam só os 3 marts.
+# O refresh agora é LOCAL: extract + dbt build (dev) + publish_marts.py (ver DEPLOY.md).
+# Mantido como registro do design ELT->prod (secrets/SSL/dbt --target prod). Sem `schedule`:
+# não auto-dispara; um workflow_dispatch manual falharia no download do gov.br, antes do Neon.
+name: ELT -> Neon (DESATIVADO - referência; refresh roda local)
 
-# Cron só dispara no branch DEFAULT do repo (main). workflow_dispatch roda sob demanda
-# (use full=true p/ o backfill da série inteira na 1ª carga).
 on:
-  schedule:
-    - cron: "0 9 * * 1" # seg 09:00 UTC (06:00 BRT)
   workflow_dispatch:
     inputs:
       full:
-        description: "Rebaixar a serie inteira (backfill unico)"
+        description: "Rebaixar a serie inteira - DESATIVADO (ver DEPLOY.md)"
         type: boolean
         default: false
 
