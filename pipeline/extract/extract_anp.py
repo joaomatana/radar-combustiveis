@@ -11,6 +11,7 @@ import argparse
 import io
 import os
 import re
+import socket
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -19,6 +20,12 @@ from urllib.parse import urlparse
 import pandas as pd
 import psycopg2
 import requests
+import urllib3.util.connection as urllib3_cn
+
+# Runner do GitHub Actions tem egress só-IPv4; www.gov.br resolve p/ IPv6 e não há rota
+# até ele (ENETUNREACH). Força requests/urllib3 a conectar só por IPv4 — inofensivo local
+# (a máquina tem IPv4); a CI da ETAPA 2 nunca pegou isso (usava --fixtures-dir, sem rede).
+urllib3_cn.allowed_gai_family = lambda: socket.AF_INET
 
 LISTING_URL = (
     "https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/"
