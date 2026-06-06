@@ -4,6 +4,8 @@
 # O refresh agora é LOCAL: extract + dbt build (dev) + publish_marts.py (ver DEPLOY.md).
 # Mantido como registro do design ELT->prod (secrets/SSL/dbt --target prod). Sem `schedule`:
 # não auto-dispara; um workflow_dispatch manual falharia no download do gov.br, antes do Neon.
+# NB: o extract hoje RECUSA qualquer host neon.tech (sem escape) — o RADAR_ALLOW_PROD abaixo
+# é inerte; é só registro do design antigo. O Neon recebe só os marts (publish_marts.py).
 name: ELT -> Neon (DESATIVADO - referência; refresh roda local)
 
 on:

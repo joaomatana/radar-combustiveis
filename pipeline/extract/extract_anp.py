@@ -151,10 +151,14 @@ def conexao() -> "psycopg2.extensions.connection":
     dsn = os.environ.get("DATABASE_URL")
     host = (urlparse(dsn).hostname or "") if dsn else os.environ.get("POSTGRES_HOST", "localhost")
     port = os.environ.get("POSTGRES_PORT", "5433")
-    if "neon.tech" in host and os.environ.get("RADAR_ALLOW_PROD") != "1":
+    # O extract é LOCAL-only: o Neon guarda SÓ os marts (publicados pelo publish_marts.py),
+    # nunca o raw. Bloqueio rígido, sem escape — carregar o raw no Neon estoura o teto de 512 MB.
+    if "neon.tech" in host:
         sys.exit(
-            f"ABORTADO: host '{host}' parece prod (Neon). Use o Postgres local "
-            "(ou RADAR_ALLOW_PROD=1 para forçar)."
+            f"ABORTADO: host '{host}' é o Neon (prod). O extract roda SÓ no Postgres local; "
+            "o Neon recebe só os marts via pipeline/publish/publish_marts.py.\n"
+            "Confira o ambiente do shell: DATABASE_URL / POSTGRES_HOST devem ser locais "
+            "(o .env aponta p/ localhost, mas o extract lê o env do processo). Veja DEPLOY.md."
         )
     try:
         if dsn:
