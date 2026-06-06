@@ -133,8 +133,13 @@ def decodificar(blob: bytes) -> str:
 
 
 def baixar(session: requests.Session, url: str) -> Path:
-    dest = RAW_DIR / url.rsplit("/", 1)[-1]
-    if dest.exists() and ano_de(url) != datetime.now().year:
+    # Destino ÚNICO por ano: 2024 e 2025 reusam o mesmo basename (o ano só está no path
+    # da URL). Sem o prefixo, o download de um sobrescreve o do outro — ou, pior, um
+    # arquivo velho de outro ano com o mesmo nome é servido do cache e nunca re-baixado.
+    ano = ano_de(url)
+    nome = url.rsplit("/", 1)[-1]
+    dest = RAW_DIR / (f"{ano}-{nome}" if ano else nome)
+    if dest.exists() and ano != datetime.now().year:
         return dest
     resp = session.get(url, timeout=180)
     resp.raise_for_status()
@@ -182,11 +187,14 @@ def conexao() -> "psycopg2.extensions.connection":
 def criar_tabela(cur) -> None:
     cols = ",\n        ".join(f'"{c}" text' for c in CANONICAL_COLS)
     cur.execute("CREATE SCHEMA IF NOT EXISTS raw;")
-    cur.execute("DROP TABLE IF EXISTS raw.precos;")
+    # CREATE IF NOT EXISTS + TRUNCATE (não DROP): a partir da 2a carga, as views do dbt
+    # dependem de raw.precos e um DROP sem CASCADE falha. TRUNCATE recarrega sem tocar nas
+    # views (o loader é dono só de raw.precos) e é atômico com o COPY (um só commit).
     cur.execute(
-        f"CREATE TABLE raw.precos (\n        {cols},\n"
+        f"CREATE TABLE IF NOT EXISTS raw.precos (\n        {cols},\n"
         "        _arquivo_origem text,\n        _loaded_at timestamptz\n        );"
     )
+    cur.execute("TRUNCATE raw.precos;")
 
 
 def normalizar(path: Path, loaded_at: datetime) -> io.StringIO:
@@ -217,8 +225,7 @@ def normalizar(path: Path, loaded_at: datetime) -> io.StringIO:
     return buf
 
 
-def carregar(con, csv_dir: Path, loaded_at: datetime) -> int:
-    arquivos = sorted(csv_dir.glob("*.csv"))
+def carregar(con, arquivos: list[Path], loaded_at: datetime) -> int:
     cols = ", ".join(f'"{c}"' for c in TARGET_COLS)
     with con.cursor() as cur:
         criar_tabela(cur)
@@ -238,11 +245,11 @@ def carregar(con, csv_dir: Path, loaded_at: datetime) -> int:
 def main() -> None:
     args = parse_args()
     RAW_DIR.mkdir(parents=True, exist_ok=True)
-    csv_dir = RAW_DIR
+
     if args.fixtures_dir is not None:
-        csv_dir = Path(args.fixtures_dir)
         args.sem_download = True
 
+    arquivos: list[Path] = []
     if not args.sem_download:
         with requests.Session() as session:
             session.headers.update(HEADERS)
@@ -252,16 +259,23 @@ def main() -> None:
                 for u in urls:
                     print(f"  {ano_de(u)}  {produto_de(u):16}  {u.rsplit('/', 1)[-1]}")
                 return
+            # Carrega EXATAMENTE o que foi baixado nesta run (cada arquivo único por ano),
+            # não um glob de tudo em raw/ — sobras de runs antigas não entram na carga.
             for i, u in enumerate(urls, 1):
-                print(f"[{i}/{len(urls)}] {baixar(session, u).name}")
+                dest = baixar(session, u)
+                print(f"[{i}/{len(urls)}] {dest.name}")
+                arquivos.append(dest)
+    else:
+        base = Path(args.fixtures_dir) if args.fixtures_dir is not None else RAW_DIR
+        arquivos = sorted(base.glob("*.csv"))
 
-    if not list(csv_dir.glob("*.csv")):
-        print(f"Nenhum CSV em {csv_dir}.")
+    if not arquivos:
+        print("Nenhum CSV para carregar.")
         return
 
     con = conexao()
     try:
-        total = carregar(con, csv_dir, datetime.now(timezone.utc))
+        total = carregar(con, arquivos, datetime.now(timezone.utc))
     finally:
         con.close()
     print(f"raw.precos: {total} linhas")
